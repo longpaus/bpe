@@ -110,7 +110,7 @@ def pre_tokenize(chunk:str, special_tokens:list[str]) -> dict[tuple[bytes, ...],
         pre_tok:list[bytes] = [m.group(0).encode('utf-8') for m in re.finditer(PAT, d)]
         for w in pre_tok:
             key = tuple(bytes([byte]) for byte in w)
-            if w in freq_tab:
+            if key in freq_tab:
                 freq_tab[key] += 1
             else:
                 freq_tab[key] = 1
