@@ -39,12 +39,13 @@ def run_train_bpe(
     vocab:dict[int, bytes] = {}
     merges:list[tuple[bytes,bytes]] = []
 
-    # add escape lines to special tokens as they may contain '|'
-    special_tokens = list(map(lambda st: re.escape(st), special_tokens))
 
     # add special tokens to vocab
     for i,special_token in enumerate(special_tokens):
         vocab[i] = special_token
+
+    # add escape lines to special tokens as they may contain '|'
+    special_tokens = list(map(lambda st: re.escape(st), special_tokens))
 
     num_processes = 8
 
