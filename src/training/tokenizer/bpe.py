@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 import regex as re
-import tokenizer.utils as bpe_utils
+import src.utils.tokenizer as bpe_utils
 from multiprocessing import Pool
 from functools import partial
 from tqdm import tqdm

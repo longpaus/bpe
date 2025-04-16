@@ -20,29 +20,32 @@ def remove_indices(lst:list, indices:list[int]):
 
 def merge(word:tuple[bytes,...], pair:tuple[bytes,bytes])-> tuple[bytes,...]|None:
     """
+    Merges consecutive occurrences of a specified pair of bytes in a word into a single combined byte.
 
-    :param word:
-    :param pair:
-    :return:
+    Args:
+        word (tuple[bytes, ...]): A tuple of bytes representing the input sequence.
+        pair (tuple[bytes, bytes]): A tuple of two bytes to be merged when found consecutively.
+
+    Returns:
+        tuple[bytes, ...] | None: A tuple with all pairs merged, or None if no pairs were found.
     """
     if len(pair) > len(word):
         return None
-    l1,l2 = pair[0],pair[1]
 
+    l1, l2 = pair
+    new = list(word)
+    i = 0
     pair_found = False
-    pop_indices: list[int] = []
-    new: list[bytes]|None = None
-    for i in range(len(word) - 1):
-        if word[i] == l1 and word[i+1] == l2:
-            if pair_found:
-                new[i] = combine_pair(pair)
-            else:
-                new = list(word)
-                new[i] = combine_pair(pair)
-                pair_found = True
-            pop_indices.append(i+1)
-    if pair_found:
-        new = remove_indices(new, pop_indices)
+
+    while i < len(new) - 1:
+        if new[i] == l1 and new[i + 1] == l2:
+            new[i] = combine_pair(pair)
+            new.pop(i + 1)  # Remove the second byte of the pair
+            pair_found = True
+            i += 1  # Skip past the merged byte
+        else:
+            i += 1
+
     return tuple(new) if pair_found else None
 
 def find_chunk_boundaries(
@@ -96,8 +99,10 @@ def find_chunk_boundaries(
 def pre_tokenize(chunk:str, special_tokens:list[str]) -> dict[tuple[bytes, ...], int]:
     PAT = r"""'(?:[sdmt]|ll|ve|re)| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
 
+    split_data = [chunk]
     # remove special tokens
-    split_data:list[str] = re.split("|".join(special_tokens), chunk)
+    if special_tokens:
+        split_data:list[str] = re.split("|".join(special_tokens), chunk)
 
     # pre-tokenize
     freq_tab:dict[tuple[bytes,...],int] = {} # each key is a tuple of bytes where each bytes are a vocab
